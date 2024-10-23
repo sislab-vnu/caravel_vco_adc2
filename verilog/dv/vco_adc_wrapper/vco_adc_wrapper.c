@@ -142,7 +142,7 @@ void main()
     // Flag start of the test
     reg_mprj_datal = 0xB4000000;
 
-    reg_mprj_slave = VCO_ADC0_EN | NUM_SAMPLES(2048) | OVERSAMPLE(16);
+    reg_mprj_slave = VCO_ADC0_EN | NUM_SAMPLES(2048) | OVERSAMPLE(500);
     while(((reg_mprj_status >> 1) & 0x1) == 0);
     // read until empty
     for (int i = 0; i < 2048; ++i)

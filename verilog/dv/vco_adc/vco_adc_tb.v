@@ -26,7 +26,7 @@ module vco_adc_tb;
       $dumpvars(0, vco_adc_tb);
       @(rst == 1'b0)
       $display("Monitor: Test VCO_ADC (RTL) Started!");
-      repeat (4000) @(posedge clk);
+      repeat (500) @(posedge clk);
       @(data_counter == 32'h800);
       $display("Monitor: Test VCO_ADC (RTL) Passed!");
       $finish;
@@ -66,13 +66,15 @@ module vco_adc_tb;
       end
    end
    vco vco_0
-     (.enb(1'b0),
+     (
+      .clk(clk),
+      .enb(1'b0),
       .p(phase_out));
 
    vco_adc vco_adc_0
      (.clk(clk),
       .rst(rst),
-      .oversample_in(10'h1ff),
+      .oversample_in(10'h1f3),
       .enable_in(enable),
       .phase_in(phase_out),
       .data_out(sinc_out),

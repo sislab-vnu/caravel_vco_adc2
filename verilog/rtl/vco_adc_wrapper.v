@@ -87,21 +87,19 @@ module vco_adc_wrapper #(
   output [3:0] wmask_o,
 
   output [9:0] oversample_o,
-  output [2:0] sinc3_en_o,
+  output  sinc_en_o,
   // output [1:0] adc_sel_o,
-  input [2:0] adc_dvalid_i,
-  input [31:0] adc0_dat_i,
-  input [31:0] adc1_dat_i,
-  input [31:0] adc2_dat_i,
-  output [2:0] vco_enb_o
+  input  adc_dvalid_i,
+  input [31:0] adc_dat_i,
+  output vco_enb_o
 );
 
    // localparam MAX_SIZE=2048;
    // localparam MEMSIZE = 1024;
 
    reg [9:0] oversample_reg;
-   reg [2:0] ena_reg;
-   reg [1:0] adc_sel_reg;
+   reg ena_reg;
+   reg adc_sel_reg;
    reg 	     wbs_ack_reg;
 
    reg [MEM_ADDR_W+1:0] wptr_reg;
@@ -123,14 +121,14 @@ module vco_adc_wrapper #(
    reg 		 clear_wptr_reg;
    reg 		 clear_rptr_reg;
    reg 		 ren_1d_reg, ren_2d_reg, ren_3d_reg;
-   reg [2:0] 	 vco_en_reg;
+   reg  	 vco_en_reg;
    reg [10:0] 	 num_samples_reg;
    reg 		 adc_dvalid_1d_reg, adc_dvalid_2d_reg;
    reg 		 io_en_reg;
    reg 		 first_read_reg;
    reg 		 first_read_1d_reg;
 
-   reg [BITS-1:0] 	  adc_out;
+   wire [BITS-1:0] 	  adc_out;
    reg 			  adc_dvalid_tmp;
    wire 		  adc_dvalid;
    wire 		  valid_w;
@@ -148,8 +146,8 @@ module vco_adc_wrapper #(
    // synthesis translate_on
    assign oversample_o = oversample_reg;
    // assign adc_sel_o = adc_sel_reg;
-   assign sinc3_en_o = ena_reg;
-   // assign adc_out = adc_dat_i;
+   assign sinc_en_o = ena_reg;
+   assign adc_out = adc_dat_i;
    
    assign rst = wb_rst_i;
    assign slave_sel = (wbs_adr_i[31:8] == `REG_MPRJ_SLAVE);
@@ -159,28 +157,28 @@ module vco_adc_wrapper #(
    assign ren_w   = ((wbs_we_i == 1'b0) & valid_w & ~wbs_ack_reg);   
    assign mem_write = adc_dvalid_1d_reg & (!full_1d_reg);
    assign mem_read = ren_w && (wbs_adr_i[7:0] == 8'h4);
-   assign adc_dvalid = adc_dvalid_tmp;
+   assign adc_dvalid = adc_dvalid_i;
 
-   always @* begin
-      case (adc_sel_reg)
-   	2'b00: begin
-   	   adc_dvalid_tmp <= adc_dvalid_i[0];
-   	   adc_out <= adc0_dat_i;
-   	end
-   	2'b01: begin
-   	   adc_dvalid_tmp <= adc_dvalid_i[1];
-   	   adc_out <= adc1_dat_i;
-   	end
-   	2'b10: begin
-   	   adc_dvalid_tmp <= adc_dvalid_i[2];
-   	   adc_out <= adc2_dat_i;
-   	end
-   	default: begin 
-   	   adc_dvalid_tmp <= adc_dvalid_i[0];
-   	   adc_out <= adc0_dat_i;
-   	end
-      endcase // case (adc_sel)
-   end
+   // always @* begin
+   //    case (adc_sel_reg)
+   // 	2'b00: begin
+   // 	   adc_dvalid_tmp <= adc_dvalid_i[0];
+   // 	   adc_out <= adc0_dat_i;
+   // 	end
+   // 	2'b01: begin
+   // 	   adc_dvalid_tmp <= adc_dvalid_i[1];
+   // 	   adc_out <= adc1_dat_i;
+   // 	end
+   // 	2'b10: begin
+   // 	   adc_dvalid_tmp <= adc_dvalid_i[2];
+   // 	   adc_out <= adc2_dat_i;
+   // 	end
+   // 	default: begin 
+   // 	   adc_dvalid_tmp <= adc_dvalid_i[0];
+   // 	   adc_out <= adc0_dat_i;
+   // 	end
+   //    endcase // case (adc_sel)
+   // end
 
    always @(posedge wb_clk_i) begin
       if (rst == 1'b1) begin

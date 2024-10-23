@@ -89,14 +89,12 @@ module user_project_wrapper #(
    wire [3:0]	 renb;
    wire [3:0]	 wenb;
    wire [2:0] 	 a_w;
-   wire [2:0] 	 vco_enb;
-   wire [31:0] 	 adc_out_0, adc_out_1, adc_out_2;
-   reg [31:0] 	 adc_out;
+   wire  	 vco_enb;
+   wire [31:0] 	 adc_out_0;
    wire [9:0] 	 oversample;
-   wire [2:0] 	 en;
-   wire [1:0] 	 adc_sel;
+   wire  	 en;
    reg  	 adc_dvalid;
-   wire [2:0] 	 sinc3_dvalid;
+   wire  	 sinc3_dvalid;
 
 /*--------------------------------------*/
 /* User project is instantiated  here   */
@@ -146,12 +144,9 @@ module user_project_wrapper #(
            .mem3_data_i(m2w_data3),
            .wmask_o(wmask),
            .oversample_o(oversample),
-           .sinc3_en_o(en),
-           // .adc_sel_o(adc_sel),
+           .sinc_en_o(en),
            .adc_dvalid_i(sinc3_dvalid),
-           .adc0_dat_i(adc_out_0),
-           .adc1_dat_i(adc_out_1),
-           .adc2_dat_i(adc_out_2),
+           .adc_dat_i(adc_out_0),
            .vco_enb_o(vco_enb)
 	   );
 
@@ -246,20 +241,22 @@ module user_project_wrapper #(
       ,.rst(wb_rst_i)
       ,.phase_in(phase0)
       ,.oversample_in(oversample)
-      ,.enable_in(en[0])
+      ,.enable_in(en)
       ,.data_out(adc_out_0)
-      ,.data_valid_out(sinc3_dvalid[0])
+      ,.data_valid_out(sinc3_dvalid)
       );
 
-   vco vco_0 (// .clk(wb_clk_i),
+   vco vco_0 (.clk(wb_clk_i),
 	  // .rst(wb_rst_i),
 	  // .enable_in(1'b1),
 `ifdef USE_POWER_PINS
 	      .vccd2(vccd1),
 	      .vssd2(vssd1),
 `endif
-	      .enb(vco_enb[0]),
+	      .enb(vco_enb),
 	      .input_analog(analog_io[9]),
+	      .vbias34(analog_io[11]),
+	      .vbias12(analog_io[12]),
 	      .p(phase0));
    // assign analog_io[9] = a_w[0];
    assign analog_io[10] = phase0;
