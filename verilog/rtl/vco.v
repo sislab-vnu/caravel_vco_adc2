@@ -32,7 +32,7 @@ module vco
    initial begin
       $display("Load vco-phase");
       // $readmemb("testdata/0.0001V_1kHz.txt", vco_val);
-      data_file = $fopen("testdata/0.0001V_1kHz.txt", "r");
+      data_file = $fopen("testdata/0.1V_1kHz.txt", "r");
         if (data_file == `NULL) begin
 	   $display("data_file handle was NULL");
 	   $finish;
