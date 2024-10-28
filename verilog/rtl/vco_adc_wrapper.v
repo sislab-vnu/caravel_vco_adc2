@@ -98,8 +98,11 @@ module vco_adc_wrapper #(
    reg  	 vco_en_reg;
    reg [10:0] 	 num_samples_reg;
    reg 		 io_en_reg;
+   reg [31:0]	 data_reg;
+   reg		 div_2_reg;
+   reg		 div_2_1d_reg;
 
-   wire		 full, empty, fifo_ren;
+   wire		 full, empty, fifo_ren, fifo_wen;
    
    wire 		  valid_w;
    wire 		  wen_w;
@@ -121,8 +124,9 @@ module vco_adc_wrapper #(
    
    assign valid_w = wbs_cyc_i & wbs_stb_i;
    assign wen_w   = wbs_we_i & (valid_w & wbs_sel_i[0]);
-   assign ren_w   = ((wbs_we_i == 1'b0) & valid_w & ~wbs_ack_reg);
+   assign ren_w   = (wbs_we_i == 1'b0) & (valid_w & ~wbs_ack_reg);
    assign fifo_ren = ren_w & slave_sel & (wbs_adr_i[7:0] == `REG_MPRJ_FIFO_DATA);
+   assign fifo_wen = (div_2_reg == 1'b0) & (div_2_1d_reg == 1'b1);
 
    // always @* begin
    //    case (adc_sel_reg)
@@ -160,6 +164,19 @@ module vco_adc_wrapper #(
 	 if (adc_dvalid_i)
 	   num_data_reg <= num_data_reg + 1;
       end
+   end
+
+   always @(posedge wb_clk_i) begin
+      if (rst == 1'b1) begin
+	 div_2_reg <= 1'b0;
+	 div_2_1d_reg <= 1'b0;
+      end else begin
+	 if(adc_dvalid_i) div_2_reg <= ~div_2_reg;
+	 div_2_1d_reg <= div_2_reg;
+      end
+
+      if (adc_dvalid_i)
+	data_reg <= {data_reg[15:0], adc_dat_i[26:11]};
    end
    
    always @(posedge wb_clk_i) begin
@@ -222,8 +239,8 @@ module vco_adc_wrapper #(
      (.clk(wb_clk_i),
       .rst(rst),
       .read_i(fifo_ren),
-      .write_i(adc_dvalid_i),
-      .data_i(adc_dat_i),
+      .write_i(fifo_wen),
+      .data_i(data_reg),
       .data_o(fifo_out_w),
       .full_o(full),
       .empty_o(empty));
@@ -245,7 +262,7 @@ module vco_adc_wrapper #(
 
    always @(posedge wb_clk_i) begin
       if (full_reg == 1'b1 && adc_dvalid_i == 1'b1)
-	$display("Error: Fifo is full but a write is requested");
+	$display("Error: Fifo is full but a write is requested: %d", num_data_reg);
    end
 
    always @(posedge wb_clk_i) begin
@@ -255,11 +272,11 @@ module vco_adc_wrapper #(
 
    always @(posedge wb_clk_i) begin
       if (adc_dvalid_i && !full_reg) begin
-	 $display("Fifo write: %08X", adc_dat_i);
-	 $fwrite(wdat_file, "%08X\n", adc_dat_i);
+	 $display("Fifo write: %08X", data_reg);
+	 $fwrite(wdat_file, "%08X\n", data_reg);
       end
       if (wbs_ack_o && wbs_adr_i == 32'h30000004) begin
-	 $display("Interface read: addr: %08X", fifo_out_w);
+	 $display("Interface read: %08X", fifo_out_w);
 	 $fwrite(rdat_file, "%08X\n", fifo_out_w);
       end
       
