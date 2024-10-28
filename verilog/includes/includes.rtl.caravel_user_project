@@ -19,6 +19,7 @@
 -v $(USER_PROJECT_VERILOG)/rtl/vco_adc_wrapper.v
 -v $(USER_PROJECT_VERILOG)/rtl/vco_adc.v
 -v $(USER_PROJECT_VERILOG)/rtl/sinc_sync.v
+-v $(USER_PROJECT_VERILOG)/rtl/vco_adc_fifo.v
 -v $(USER_PROJECT_VERILOG)/rtl/vco.v
 
  

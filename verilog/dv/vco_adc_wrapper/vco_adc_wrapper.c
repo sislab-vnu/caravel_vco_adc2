@@ -19,6 +19,16 @@
 #include <defs.h>
 #include <stub.c>
 
+static void print_hex(uint32_t data){
+  char a;
+  for (int i = 0; i < 8; ++i){
+    a = (data >> ((7-i) << 2)) & 0xf;
+    a = (a > 9) ? (a + 0x37) : (a+0x30);
+    putchar(a);
+  }
+  putchar('\n');
+}
+
 #define reg_mprj_slave (*(volatile uint32_t*)0x30000000)
 
 // --------------------------------------------------------
@@ -61,7 +71,7 @@ static uint32_t read_data(uint32_t* data, int len) {
   for (int i = 0; i < len; ++i)
     data[i] = reg_mprj_vco_adc;
 }
-static uint32_t vco_data[32];
+static uint32_t vco_data[128];
 
 void main()
 {
@@ -143,10 +153,11 @@ void main()
     reg_mprj_datal = 0xB4000000;
 
     reg_mprj_slave = VCO_ADC0_EN | NUM_SAMPLES(2048) | OVERSAMPLE(500);
-    while(((reg_mprj_status >> 1) & 0x1) == 0);
+    while((reg_mprj_status & 0x1) != 0);
     // read until empty
-    for (int i = 0; i < 2048; ++i)
+    for (int i = 0; i < 2048; ++i){
       vco_data[0] = reg_mprj_vco_adc;
+    }
     // reread the data memory
     //reg_mprj_slave = CLEAR_RPTR | NUM_SAMPLES(64) | OVERSAMPLE(16);
     //reg_mprj_slave = NUM_SAMPLES(64) | OVERSAMPLE(16);

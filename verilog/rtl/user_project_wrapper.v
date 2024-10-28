@@ -78,16 +78,6 @@ module user_project_wrapper #(
     output [2:0] user_irq
 );
    wire 	 phase0;
-   wire [31:0] 	 m2w_data0;
-   wire [31:0] 	 m2w_data1;
-   wire [31:0] 	 m2w_data2;
-   wire [31:0] 	 m2w_data3;
-   wire [31:0] 	 w2m_data;
-   wire [8:0] 	 raddr;
-   wire [8:0] 	 waddr;
-   wire [3:0] 	 wmask;
-   wire [3:0]	 renb;
-   wire [3:0]	 wenb;
    wire [2:0] 	 a_w;
    wire  	 vco_enb;
    wire [31:0] 	 adc_out_0;
@@ -133,16 +123,6 @@ module user_project_wrapper #(
 	   .io_oeb(io_oeb),
 	   // IRQ
 	   //.irq(user_irq),
-           .mem_renb_o(renb),
-           .mem_raddr_o(raddr),
-           .mem_wenb_o(wenb),
-           .mem_waddr_o(waddr),
-           .mem_data_o(w2m_data),
-           .mem0_data_i(m2w_data0),
-           .mem1_data_i(m2w_data1),
-           .mem2_data_i(m2w_data2),
-           .mem3_data_i(m2w_data3),
-           .wmask_o(wmask),
            .oversample_o(oversample),
            .sinc_en_o(en),
            .adc_dvalid_i(sinc3_dvalid),
@@ -150,87 +130,6 @@ module user_project_wrapper #(
            .vco_enb_o(vco_enb)
 	   );
 
-   sky130_sram_2kbyte_1rw1r_32x512_8
-     mem_0 (
-`ifdef USE_POWER_PINS
-	    .vccd1(vccd1),
-	    .vssd1(vssd1),
-`endif
-// Port 0: RW
-	    .clk0(wb_clk_i),
-	    .csb0(wenb[0]),
-	    .web0(wenb[0]),
-	    .wmask0(wmask),
-	    .addr0(waddr),
-	    .din0(w2m_data),
-	    .dout0(),
-// Port 1: R
-	    .clk1(wb_clk_i),
-	    .csb1(renb[0]),
-	    .addr1(raddr),
-	    .dout1(m2w_data0)
-  );
-
-   sky130_sram_2kbyte_1rw1r_32x512_8
-     mem_1 (
-`ifdef USE_POWER_PINS
-	    .vccd1(vccd1),
-	    .vssd1(vssd1),
-`endif
-// Port 0: RW
-	    .clk0(wb_clk_i),
-	    .csb0(wenb[1]),
-	    .web0(wenb[1]),
-	    .wmask0(wmask),
-	    .addr0(waddr),
-	    .din0(w2m_data),
-	    .dout0(),
-// Port 1: R
-	    .clk1(wb_clk_i),
-	    .csb1(renb[1]),
-	    .addr1(raddr),
-	    .dout1(m2w_data1)
-  );
-   sky130_sram_2kbyte_1rw1r_32x512_8
-     mem_2 (
-`ifdef USE_POWER_PINS
-	    .vccd1(vccd1),
-	    .vssd1(vssd1),
-`endif
-// Port 0: RW
-	    .clk0(wb_clk_i),
-	    .csb0(wenb[2]),
-	    .web0(wenb[2]),
-	    .wmask0(wmask),
-	    .addr0(waddr),
-	    .din0(w2m_data),
-	    .dout0(),
-// Port 1: R
-	    .clk1(wb_clk_i),
-	    .csb1(renb[2]),
-	    .addr1(raddr),
-	    .dout1(m2w_data2)
-  );
-   sky130_sram_2kbyte_1rw1r_32x512_8
-     mem_3 (
-`ifdef USE_POWER_PINS
-	    .vccd1(vccd1),
-	    .vssd1(vssd1),
-`endif
-// Port 0: RW
-	    .clk0(wb_clk_i),
-	    .csb0(wenb[3]),
-	    .web0(wenb[3]),
-	    .wmask0(wmask),
-	    .addr0(waddr),
-	    .din0(w2m_data),
-	    .dout0(),
-// Port 1: R
-	    .clk1(wb_clk_i),
-	    .csb1(renb[3]),
-	    .addr1(raddr),
-	    .dout1(m2w_data3)
-  );
 
    vco_adc vco_adc_0 (
 `ifdef USE_POWER_PINS
