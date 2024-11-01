@@ -73,11 +73,12 @@ module vco_adc_wrapper #(
 
     // IRQ
     //output [2:0] irq,
-  output [9:0] oversample_o,
-  output  sinc_en_o,
-  // output [1:0] adc_sel_o,
-  input  adc_dvalid_i,
-  input [31:0] adc_dat_i,
+  // output [9:0] oversample_o,
+  // output  sinc_en_o,
+  // // output [1:0] adc_sel_o,
+  input phase_in,
+  // input  adc_dvalid_i,
+  // input [31:0] adc_dat_i,
   output vco_enb_o
 );
 
@@ -111,13 +112,15 @@ module vco_adc_wrapper #(
    reg 			  ren_reg;
    wire 		  rst;
    wire 		  slave_sel;
+   wire			  adc_dvalid_i;
+   wire [31:0]		  adc_dat_i;
    // synthesis translate_off
    integer 		  rdat_file;
    integer 		  wdat_file;
    // synthesis translate_on
-   assign oversample_o = oversample_reg;
+   // assign oversample_o = oversample_reg;
    // assign adc_sel_o = adc_sel_reg;
-   assign sinc_en_o = ena_reg;
+   // assign sinc_en_o = ena_reg;
    
    assign rst = wb_rst_i;
    assign slave_sel = (wbs_adr_i[31:8] == `REG_MPRJ_SLAVE);
@@ -195,7 +198,7 @@ module vco_adc_wrapper #(
 	 oversample_reg		<= 10'b0;
 	 ena_reg		<= 3'b0;
 	 vco_en_reg		<= 3'h0;
-	 num_samples_reg	<= 1024;
+	 num_samples_reg	<= 0;
 	 adc_sel_reg		<= 2'h0;
 	 io_en_reg		<= 1'b0;
       end else begin
@@ -206,6 +209,9 @@ module vco_adc_wrapper #(
 	    io_en_reg <= wbs_dat_i[21];
 	    num_samples_reg     <= wbs_dat_i[20:10];
 	    oversample_reg	<= wbs_dat_i[9:0];
+	 end else if (num_data_reg == num_samples_reg) begin
+	    ena_reg <= 1'b0;
+	    vco_en_reg <= 1'b0;
 	 end
       end
    end
@@ -245,6 +251,16 @@ module vco_adc_wrapper #(
       .full_o(full),
       .empty_o(empty));
 
+
+   vco_adc vco_adc_0
+     (.clk(wb_clk_i),
+      .rst(rst),
+      .oversample_in(oversample_reg),
+      .enable_in(ena_reg),
+      .phase_in(phase_in),
+      .data_out(adc_dat_i),
+      .data_valid_out(adc_dvalid_i)
+      );
    
    // IO
    assign io_out    = fifo_out_w;

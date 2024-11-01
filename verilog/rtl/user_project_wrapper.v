@@ -123,27 +123,10 @@ module user_project_wrapper #(
 	   .io_oeb(io_oeb),
 	   // IRQ
 	   //.irq(user_irq),
-           .oversample_o(oversample),
-           .sinc_en_o(en),
-           .adc_dvalid_i(sinc3_dvalid),
-           .adc_dat_i(adc_out_0),
+	   .phase_in(phase0),
            .vco_enb_o(vco_enb)
 	   );
 
-
-   vco_adc vco_adc_0 (
-`ifdef USE_POWER_PINS
-	      .vccd1(vccd1),
-	      .vssd1(vssd1),
-`endif
-      .clk(wb_clk_i)
-      ,.rst(wb_rst_i)
-      ,.phase_in(phase0)
-      ,.oversample_in(oversample)
-      ,.enable_in(en)
-      ,.data_out(adc_out_0)
-      ,.data_valid_out(sinc3_dvalid)
-      );
 
    vco vco_0 (.clk(wb_clk_i),
 	  // .rst(wb_rst_i),
