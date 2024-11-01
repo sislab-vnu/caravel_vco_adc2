@@ -119,8 +119,8 @@ module user_project_wrapper #(
 	   // IO Pads
 
 	   //.io_in (io_in),
-	   .io_out(io_out),
-	   .io_oeb(io_oeb),
+	   // .io_out(io_out),
+	   // .io_oeb(io_oeb),
 	   // IRQ
 	   //.irq(user_irq),
 	   .phase_in(phase0),

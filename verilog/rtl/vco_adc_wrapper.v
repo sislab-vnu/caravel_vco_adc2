@@ -68,11 +68,11 @@ module vco_adc_wrapper #(
 
     // IOs
     // input  [`MPRJ_IO_PADS-1:0] io_in,
-    output [`MPRJ_IO_PADS-1:0] io_out,
-    output [`MPRJ_IO_PADS-1:0] io_oeb,
+    // output [`MPRJ_IO_PADS-1:0] io_out,
+    // output [`MPRJ_IO_PADS-1:0] io_oeb,
 
     // IRQ
-    //output [2:0] irq,
+    // output [2:0] irq,
   // output [9:0] oversample_o,
   // output  sinc_en_o,
   // // output [1:0] adc_sel_o,
@@ -263,8 +263,8 @@ module vco_adc_wrapper #(
       );
    
    // IO
-   assign io_out    = fifo_out_w;
-   assign io_oeb = {(`MPRJ_IO_PADS-1){~io_en_reg}};
+   // assign io_out    = fifo_out_w;
+   // assign io_oeb = {(`MPRJ_IO_PADS-1){~io_en_reg}};
    //assign irq  = 3'b000;
    assign wbs_dat_o = data_o;
    assign vco_enb_o = ~vco_en_reg;
