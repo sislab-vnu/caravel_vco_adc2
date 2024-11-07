@@ -128,20 +128,21 @@ module user_project_wrapper #(
 	   );
 
 
-   vco vco_0 (.clk(wb_clk_i),
+   vco_adc2 vco_0 (
 	  // .rst(wb_rst_i),
 	  // .enable_in(1'b1),
 `ifdef USE_POWER_PINS
-	      .vccd2(vccd1),
-	      .vssd2(vssd1),
+		   .vdda(vdda1),
+		   .gnd(vssa1),
 `endif
-	      .enb(vco_enb),
-	      .input_analog(analog_io[9]),
-	      .vbias34(analog_io[11]),
-	      .vbias12(analog_io[12]),
-	      .p(phase0));
+		   .clk(wb_clk_i),
+		   .enable_in(vco_enb),
+		   .analog_in(analog_io[16]),
+		   .vbias_34(analog_io[18]),
+		   .vbias_12(analog_io[17]),
+		   .quantizer_out(phase0));
    // assign analog_io[9] = a_w[0];
-   assign analog_io[10] = phase0;
+   // assign analog_io[10] = phase0;
 
 // user_proj_example mprj (
 // `ifdef USE_POWER_PINS

@@ -7,21 +7,27 @@
     "ROUTING_CORES": 1,
     "CLOCK_PERIOD": 25,
     "CLOCK_PORT": "wb_clk_i",
-    "CLOCK_NET": "mprj.clk",
-    "FP_PDN_MACRO_HOOKS": "mprj vccd1 vssd1 vccd1 vssd1",
+    "FP_PDN_MACRO_HOOKS": "vco_adc_wrapper_1 vccd1 vssd1 vccd1 vssd1 vco_0 vdda1 vssa1 vdda gnd",
     "MACRO_PLACEMENT_CFG": "dir::macro.cfg",
     "MAGIC_DEF_LABELS": 0,
     "VERILOG_FILES_BLACKBOX": [
-        "dir::../../verilog/gl/user_proj_example.v"
+        "dir::../../verilog/gl/vco_adc_wrapper.v",
+	"dir::../../verilog/rtl/vco_adc2.v"
     ],
-    "EXTRA_LEFS": "dir::../../lef/user_proj_example.lef",
-    "EXTRA_GDS_FILES": "dir::../../gds/user_proj_example.gds",
-    "EXTRA_LIBS": "dir::../../lib/user_proj_example.lib",
+    "EXTRA_LEFS": [
+	"dir::../../lef/vco_adc_wrapper.lef",
+	"dir::../../lef/vco_adc2.lef"
+    ],
+    "EXTRA_GDS_FILES": [
+	"dir::../../gds/vco_adc_wrapper.gds",
+	"dir::../../gds/vco_adc2.gds"
+    ],
+    "EXTRA_LIBS": "dir::../../lib/vco_adc_wrapper.lib",
     "EXTRA_SPEFS": [
-        "user_proj_example", 
-        "dir::../../spef/multicorner/user_proj_example.min.spef", 
-        "dir::../../spef/multicorner/user_proj_example.nom.spef", 
-        "dir::../../spef/multicorner/user_proj_example.max.spef"
+        "vco_adc_wrapper", 
+        "dir::../../spef/multicorner/vco_adc_wrapper.min.spef", 
+        "dir::../../spef/multicorner/vco_adc_wrapper.nom.spef", 
+        "dir::../../spef/multicorner/vco_adc_wrapper.max.spef"
     ],
     "BASE_SDC_FILE": "dir::base_user_project_wrapper.sdc",
     "IO_SYNC": 0,
@@ -49,6 +55,7 @@
     "FP_SIZING": "absolute",
     "RUN_CVC": 0,
     "UNIT": 2.4,
+    "LVS_CONNECT_BY_LABEL": 1,
     "FP_IO_VEXTEND": "expr::2 * $UNIT",
     "FP_IO_HEXTEND": "expr::2 * $UNIT",
     "FP_IO_VLENGTH": "expr::$UNIT",
