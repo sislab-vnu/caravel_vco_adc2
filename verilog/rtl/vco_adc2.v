@@ -3,8 +3,8 @@
 module vco_adc2
   (
 `ifdef USE_POWER_PINS
-    input vdda,	// User area 1 1.8V supply
-    input gnd,	// User area 1 analog ground
+    input vdda1,	// User area 1 1.8V supply
+    input vssa1,	// User area 1 analog ground
 `endif
 
    input 		    clk,

@@ -132,8 +132,8 @@ module user_project_wrapper #(
 	  // .rst(wb_rst_i),
 	  // .enable_in(1'b1),
 `ifdef USE_POWER_PINS
-		   .vdda(vdda1),
-		   .gnd(vssa1),
+		   .vdda1(vdda1),
+		   .vssa1(vssa1),
 `endif
 		   .clk(wb_clk_i),
 		   .enable_in(vco_enb),
