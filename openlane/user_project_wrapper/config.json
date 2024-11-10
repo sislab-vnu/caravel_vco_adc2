@@ -7,7 +7,8 @@
     "ROUTING_CORES": 1,
     "CLOCK_PERIOD": 25,
     "CLOCK_PORT": "wb_clk_i",
-    "FP_PDN_MACRO_HOOKS": "vco_adc_wrapper_1 vccd1 vssd1 vccd1 vssd1 vco_0 vdda1 vssa1 vdda gnd",
+    "FP_PDN_MACRO_HOOKS": ["vco_adc_wrapper_1 vccd1 vssd1 vccd1 vssd1,",
+                           "vco_0 vdda1 vssa1 vdda1 vssa1"],
     "MACRO_PLACEMENT_CFG": "dir::macro.cfg",
     "MAGIC_DEF_LABELS": 0,
     "VERILOG_FILES_BLACKBOX": [

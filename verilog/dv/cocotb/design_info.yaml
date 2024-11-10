@@ -1,8 +1,8 @@
-CARAVEL_ROOT: /home/toind/work/caravel_vco_adc2/caravel
-MCW_ROOT: /home/toind/work/caravel_vco_adc2/mgmt_core_wrapper
+CARAVEL_ROOT: /home/admin/projects/caravel_vco_adc2/caravel
+MCW_ROOT: /home/admin/projects/caravel_vco_adc2/mgmt_core_wrapper
 PDK: sky130A
-PDK_ROOT: /home/toind/eda/unic-cass/share/pdk
-USER_PROJECT_ROOT: /home/toind/work/caravel_vco_adc2
+PDK_ROOT: /home/admin/projects/caravel_vco_adc2/dependencies/pdks
+USER_PROJECT_ROOT: /home/admin/projects/caravel_vco_adc2
 caravan: false
 clk: 25
 emailto:

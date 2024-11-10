@@ -1,7 +1,7 @@
 magic
 tech sky130A
 magscale 1 2
-timestamp 1730939882
+timestamp 1731039057
 << locali >>
 rect -710 8050 -310 8070
 rect -710 8010 -690 8050
@@ -2000,23 +2000,23 @@ rect 24720 -23430 24960 -23330
 rect 24356 -23476 24960 -23430
 rect 24360 -23480 24960 -23476
 use ALib_DCO  ALib_DCO_0
-timestamp 1730531556
+timestamp 1731037740
 transform 1 0 5200 0 1 -5190
 box 1000 -4470 13410 5980
 use ALib_VCO  ALib_VCO_0
-timestamp 1730639796
+timestamp 1731037740
 transform 1 0 -2020 0 1 1040
 box 0 280 20640 7030
 use DLib_Quantizer  DLib_Quantizer_0
-timestamp 1730532965
+timestamp 1731037740
 transform 1 0 -2210 0 1 -4630
 box 190 -710 5890 730
 use DLib_UpDownCounter  DLib_UpDownCounter_0
-timestamp 1730536752
+timestamp 1731037740
 transform 1 0 -1140 0 1 -5986
 box -880 -3154 3140 -440
 use DLib_UpDownCounter  DLib_UpDownCounter_1
-timestamp 1730536752
+timestamp 1731037740
 transform 1 0 -1140 0 1 344
 box -880 -3154 3140 -440
 << labels >>
@@ -2027,7 +2027,7 @@ port 2 nsew signal input
 flabel metal2 -7406 -26634 -6946 -25254 1 FreeSans 736 0 0 0 clk
 port 5 nsew signal input
 flabel metal3 -4148 9316 20060 9860 1 FreeSans 4352 0 0 0 gnd
-port 8 nsew ground input
+port 8 nsew ground bidirectional abutment
 flabel metal2 2800 -26630 3352 -25158 1 FreeSans 736 0 0 0 quantizer_out
 port 6 nsew signal output
 flabel metal2 -1248 -26634 -696 -25254 1 FreeSans 736 0 0 0 enable_in
@@ -2035,17 +2035,17 @@ port 4 nsew signal input
 flabel metal2 39514 32062 41630 32430 1 FreeSans 1472 0 0 0 analog_in
 port 3 nsew signal input
 flabel metal3 -8908 11356 24956 11900 1 FreeSans 4352 0 0 0 vdda
-port 7 nsew power input
+port 7 nsew power bidirectional abutment
 rlabel metal4 -4150 -19110 -3580 9850 1 gnd
-port 8 nsew ground input
+port 8 nsew ground bidirectional
 rlabel metal3 -4150 -19110 20080 -18540 1 gnd
-port 8 nsew ground input
+port 8 nsew ground bidirectional
 rlabel metal4 19560 -19050 20150 9900 1 gnd
-port 8 nsew ground input
+port 8 nsew ground bidirectional
 rlabel metal4 -8930 -23480 -8310 11960 1 vdda
-port 7 nsew power input
+port 7 nsew power bidirectional
 rlabel metal4 24360 -23480 24960 11960 1 vdda
-port 7 nsew power input
+port 7 nsew power bidirectional
 rlabel metal3 -8930 -23480 24960 -22880 1 vdda
-port 7 nsew power input
+port 7 nsew power bidirectional
 << end >>

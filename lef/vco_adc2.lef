@@ -180,8 +180,8 @@ MACRO vco_adc2
         RECT 14.000 -133.150 16.760 -125.790 ;
     END
   END quantizer_out
-  PIN vdda
-    DIRECTION INPUT ;
+  PIN vdda1
+    DIRECTION INOUT ;
     USE POWER ;
     PORT
       LAYER nwell ;
@@ -761,9 +761,9 @@ MACRO vco_adc2
         RECT 121.780 -117.380 124.800 59.500 ;
         RECT 121.800 -117.400 124.800 -117.380 ;
     END
-  END vdda
-  PIN gnd
-    DIRECTION INPUT ;
+  END vdda1
+  PIN vssa1
+    DIRECTION INOUT ;
     USE GROUND ;
     PORT
       LAYER pwell ;
@@ -1460,7 +1460,7 @@ MACRO vco_adc2
         RECT 97.580 -95.500 100.750 49.300 ;
         RECT 97.600 -95.600 100.750 -95.500 ;
     END
-  END gnd
+  END vssa1
   OBS
       LAYER nwell ;
         RECT 34.400 -0.750 81.200 3.050 ;
