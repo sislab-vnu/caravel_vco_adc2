@@ -1,20 +1,24 @@
 ###############################################################################
 # Created by write_sdc
-# Sat Nov  2 00:28:51 2024
+# Sat Nov 23 09:07:28 2024
 ###############################################################################
 current_design vco_adc_wrapper
 ###############################################################################
 # Timing Constraints
 ###############################################################################
-create_clock -name clk -period 25.0000 [get_ports {wb_clk_i}]
+create_clock -name clk -period 20.0000 [get_ports {wb_clk_i}]
 set_clock_transition 0.1500 [get_clocks {clk}]
 set_clock_uncertainty 0.2500 clk
 set_propagated_clock [get_clocks {clk}]
+create_clock -name vco_clk -period 25.0000 [get_ports {user_clock2}]
+set_propagated_clock [get_clocks {vco_clk}]
 set_clock_latency -source -min 4.6500 [get_clocks {clk}]
 set_clock_latency -source -max 5.5700 [get_clocks {clk}]
-set_input_delay 3.1700 -clock [get_clocks {clk}] -rise -max -add_delay [get_ports {phase_in}]
-set_input_delay 3.1700 -clock [get_clocks {clk}] -fall -max -add_delay [get_ports {phase_in}]
-set_input_delay 12.5000 -clock [get_clocks {clk}] -add_delay [get_ports {wb_rst_i}]
+set_clock_latency -source -min 4.1100 [get_clocks {vco_clk}]
+set_clock_latency -source -max 4.5700 [get_clocks {vco_clk}]
+set_input_delay 3.1700 -clock [get_clocks {vco_clk}] -rise -max -add_delay [get_ports {phase_in}]
+set_input_delay 3.1700 -clock [get_clocks {vco_clk}] -fall -max -add_delay [get_ports {phase_in}]
+set_input_delay 10.0000 -clock [get_clocks {clk}] -add_delay [get_ports {wb_rst_i}]
 set_input_delay 0.7900 -clock [get_clocks {clk}] -min -add_delay [get_ports {wbs_adr_i[0]}]
 set_input_delay 3.8900 -clock [get_clocks {clk}] -max -add_delay [get_ports {wbs_adr_i[0]}]
 set_input_delay 0.7900 -clock [get_clocks {clk}] -min -add_delay [get_ports {wbs_adr_i[10]}]
@@ -157,8 +161,14 @@ set_input_delay 1.8600 -clock [get_clocks {clk}] -min -add_delay [get_ports {wbs
 set_input_delay 4.1300 -clock [get_clocks {clk}] -max -add_delay [get_ports {wbs_stb_i}]
 set_input_delay 1.6500 -clock [get_clocks {clk}] -min -add_delay [get_ports {wbs_we_i}]
 set_input_delay 3.7400 -clock [get_clocks {clk}] -max -add_delay [get_ports {wbs_we_i}]
-set_output_delay 3.6200 -clock [get_clocks {clk}] -rise -max -add_delay [get_ports {vco_enb_o}]
-set_output_delay 3.6200 -clock [get_clocks {clk}] -fall -max -add_delay [get_ports {vco_enb_o}]
+set_output_delay 4.3400 -clock [get_clocks {clk}] -min -add_delay [get_ports {io_oeb[0]}]
+set_output_delay 11.3200 -clock [get_clocks {clk}] -max -add_delay [get_ports {io_oeb[0]}]
+set_output_delay 4.3400 -clock [get_clocks {clk}] -min -add_delay [get_ports {io_oeb[1]}]
+set_output_delay 11.3200 -clock [get_clocks {clk}] -max -add_delay [get_ports {io_oeb[1]}]
+set_output_delay 4.3400 -clock [get_clocks {clk}] -min -add_delay [get_ports {io_oeb[2]}]
+set_output_delay 11.3200 -clock [get_clocks {clk}] -max -add_delay [get_ports {io_oeb[2]}]
+set_output_delay 0.0000 -clock [get_clocks {vco_clk}] -min -add_delay [get_ports {vco_enb_o}]
+set_output_delay 3.6200 -clock [get_clocks {vco_clk}] -max -add_delay [get_ports {vco_enb_o}]
 set_output_delay 1.3700 -clock [get_clocks {clk}] -min -add_delay [get_ports {wbs_ack_o}]
 set_output_delay 8.4100 -clock [get_clocks {clk}] -max -add_delay [get_ports {wbs_ack_o}]
 set_output_delay 1.1300 -clock [get_clocks {clk}] -min -add_delay [get_ports {wbs_dat_o[0]}]
@@ -233,11 +243,20 @@ set_multicycle_path -setup\
     -through [list [get_ports {wbs_ack_o}]\
            [get_ports {wbs_cyc_i}]\
            [get_ports {wbs_stb_i}]] 2
+set_false_path\
+    -from [get_clocks {clk}]\
+    -to [get_clocks {vco_clk}]
+set_false_path\
+    -from [get_clocks {vco_clk}]\
+    -to [get_clocks {clk}]
 ###############################################################################
 # Environment
 ###############################################################################
 set_load -pin_load 0.1900 [get_ports {vco_enb_o}]
 set_load -pin_load 0.1900 [get_ports {wbs_ack_o}]
+set_load -pin_load 0.1900 [get_ports {io_oeb[2]}]
+set_load -pin_load 0.1900 [get_ports {io_oeb[1]}]
+set_load -pin_load 0.1900 [get_ports {io_oeb[0]}]
 set_load -pin_load 0.1900 [get_ports {wbs_dat_o[31]}]
 set_load -pin_load 0.1900 [get_ports {wbs_dat_o[30]}]
 set_load -pin_load 0.1900 [get_ports {wbs_dat_o[29]}]
@@ -270,8 +289,9 @@ set_load -pin_load 0.1900 [get_ports {wbs_dat_o[3]}]
 set_load -pin_load 0.1900 [get_ports {wbs_dat_o[2]}]
 set_load -pin_load 0.1900 [get_ports {wbs_dat_o[1]}]
 set_load -pin_load 0.1900 [get_ports {wbs_dat_o[0]}]
-set_input_transition -rise -max 0.8400 [get_ports {phase_in}]
-set_input_transition -fall -max 0.8400 [get_ports {phase_in}]
+set_input_transition -min 0.0700 [get_ports {phase_in}]
+set_input_transition -max 0.9200 [get_ports {phase_in}]
+set_input_transition 0.1300 [get_ports {user_clock2}]
 set_input_transition 0.6100 [get_ports {wb_clk_i}]
 set_input_transition -min 0.0900 [get_ports {wbs_cyc_i}]
 set_input_transition -max 0.1700 [get_ports {wbs_cyc_i}]

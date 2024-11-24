@@ -1,7 +1,7 @@
 CARAVEL_ROOT: /home/admin/projects/caravel_vco_adc2/caravel
 MCW_ROOT: /home/admin/projects/caravel_vco_adc2/mgmt_core_wrapper
 PDK: sky130A
-PDK_ROOT: /home/admin/projects/caravel_vco_adc2/dependencies/pdks
+PDK_ROOT: /home/admin/projects/IC5-CASS-2024_2/dependencies/pdks
 USER_PROJECT_ROOT: /home/admin/projects/caravel_vco_adc2
 caravan: false
 clk: 25

@@ -25,7 +25,7 @@ module vco_adc_wrapper_tb;
    assign checkbits = mprj_io[31:24];
    assign spivalue  = mprj_io[15:0];
 
-   always #10 clock <= (clock === 1'b0);
+   always #41.665 clock <= (clock === 1'b0);
 
    initial begin
       clock = 0;

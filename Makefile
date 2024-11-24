@@ -38,16 +38,16 @@ ifeq ($(ROOTLESS), 1)
 endif
 export OPENLANE_ROOT?=$(PWD)/dependencies/openlane_src
 export PDK_ROOT?=$(PWD)/dependencies/pdks
-export DISABLE_LVS?=0
+export DISABLE_LVS?=1
 
 export ROOTLESS
 
 ifeq ($(PDK),sky130A)
 	SKYWATER_COMMIT=f70d8ca46961ff92719d8870a18a076370b85f6c
-	export OPEN_PDKS_COMMIT_LVS?=6d4d11780c40b20ee63cc98e645307a9bf2b2ab8
+	export OPEN_PDKS_COMMIT_LVS?=0fe599b2afb6708d281543108caf8310912f54af
 	export OPEN_PDKS_COMMIT?=78b7bc32ddb4b6f14f76883c2e2dc5b5de9d1cbc
 	export OPENLANE_TAG?=2023.07.19-1
-	MPW_TAG ?= 2024.09.12-1
+	MPW_TAG ?= 2024.09.13-1
 
 ifeq ($(CARAVEL_LITE),1)
 	CARAVEL_NAME := caravel-lite
@@ -275,6 +275,19 @@ run-precheck: check-pdk check-precheck enable-lvs-pdk
 		-u $(shell id -u $(USER)):$(shell id -g $(USER)) \
 		efabless/mpw_precheck:latest bash -c "cd $(PRECHECK_ROOT) ; python3 mpw_precheck.py --input_directory $(INPUT_DIRECTORY) --pdk_path $(PDK_ROOT)/$(PDK)"; \
 	fi
+run-klayout_feol: check-pdk check-precheck enable-lvs-pdk
+	$(eval INPUT_DIRECTORY := $(shell pwd)) \
+		cd $(PRECHECK_ROOT) && \
+		docker run -it -v $(PRECHECK_ROOT):$(PRECHECK_ROOT) \
+		-v $(INPUT_DIRECTORY):$(INPUT_DIRECTORY) \
+		-v $(PDK_ROOT):$(PDK_ROOT) \
+		-v $(HOME)/.ipm:$(HOME)/.ipm \
+		-e INPUT_DIRECTORY=$(INPUT_DIRECTORY) \
+		-e PDK_PATH=$(PDK_ROOT)/$(PDK) \
+		-e PDK_ROOT=$(PDK_ROOT) \
+		-e PDKPATH=$(PDKPATH) \
+		-u $(shell id -u $(USER)):$(shell id -g $(USER)) \
+		efabless/mpw_precheck:latest bash -c "cd $(PRECHECK_ROOT) ; python3 mpw_precheck.py --input_directory $(INPUT_DIRECTORY) --pdk_path $(PDK_ROOT)/$(PDK) klayout_feol"; \
 
 .PHONY: enable-lvs-pdk
 enable-lvs-pdk:

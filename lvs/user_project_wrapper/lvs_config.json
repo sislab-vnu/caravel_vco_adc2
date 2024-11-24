@@ -2,28 +2,37 @@
 	"TOP_SOURCE": "user_project_wrapper",
 	"TOP_LAYOUT": "$TOP_SOURCE",
 	"EXTRACT_FLATGLOB": [
-		""
+		"sky130_fd_pr__res_xhigh_po_0p35_*"
 	],
 	"EXTRACT_ABSTRACT": [
 		"*__fill_*",
 		"*__fakediode_*",
 		"*__tapvpwrvgnd_*"
 	],
-	"LVS_FLATTEN": [
-		""
+	"EXTRACT_CREATE_SUBCUT": [
+		"bec"
 	],
 	"LVS_NOFLATTEN": [
-		""
+		"sky130_fd_sc_*",
+		"sky130_fd_pr__res_xhigh_po_0p35"
+	],
+	"LVS_FLATTEN": [
+	    ""
 	],
 	"LVS_IGNORE": [
 		""
 	],
 	"LVS_SPICE_FILES": [
 		"$PDK_ROOT/$PDK/libs.ref/sky130_fd_sc_hd/spice/sky130_ef_sc_hd__decap_12.spice",
-		"$PDK_ROOT/$PDK/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice"
+	    "$PDK_ROOT/$PDK/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice",
+	    "$UPRJ_ROOT/spi/lvs/vco_adc2.spice"
 	],
 	"LVS_VERILOG_FILES": [
-		"$UPRJ_ROOT/verilog/gl/user_proj_example.v",
+		"$UPRJ_ROOT/verilog/gl/vmsu_8bit_top.v",
+		"$UPRJ_ROOT/verilog/gl/ascon_wrapper.v",
+		"$UPRJ_ROOT/verilog/gl/bec.v",
+		"$UPRJ_ROOT/verilog/gl/lovers_controller.v",
+		"$UPRJ_ROOT/verilog/gl/vco_adc_wrapper.v",
 		"$UPRJ_ROOT/verilog/gl/$TOP_SOURCE.v"
 	],
 	"LAYOUT_FILE": "$UPRJ_ROOT/gds/$TOP_LAYOUT.gds"

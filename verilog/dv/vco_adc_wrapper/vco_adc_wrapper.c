@@ -36,22 +36,13 @@ static void print_hex(uint32_t data){
 #define reg_mprj_status  (*(volatile uint32_t*)0x30000008)
 #define reg_mprj_no_data (*(volatile uint32_t*)0x3000000C)
 
-#define FILTER_2_EN	(1 << 31)
-#define FILTER_1_EN	(1 << 30)
-#define FILTER_0_EN	(1 << 29)
-#define VCO_2_EN	(1 << 28)
-#define VCO_1_EN	(1 << 27)
-#define VCO_0_EN	(1 << 26)
-#define ADC_SEL(a)      ((a & 0x3) << 24)
-#define CLEAR_WPTR	(1 << 23)
-#define CLEAR_RPTR	(1 << 22)
-#define IO_EN		(1 << 21)
-#define NUM_SAMPLES(a)  (((a-1) & 0x7FF) << 10)
+#define SHIFT_FACTOR(a) ((a & 0xf) << 25)
+#define FILTER_EN	(1 << 24)
+#define VCO_EN	(1 << 23)
+#define CAPTURE_CONT	(1 << 22) // a= 0: stop after number of sample; a = 1: non-stop
+#define NUM_SAMPLES(a)  ((a & 0xFFF) << 10)
 #define OVERSAMPLE(a)   (((a-1) & 0x3FF))
-#define VCO_ADC0_EN	(FILTER_0_EN | VCO_0_EN | ADC_SEL(0))
-#define VCO_ADC1_EN	(FILTER_1_EN | VCO_1_EN | ADC_SEL(1))
-#define VCO_ADC2_EN	(FILTER_2_EN | VCO_2_EN | ADC_SEL(2))
-
+#define VCO_ADC0_EN	(FILTER_EN | VCO_EN)
 #define VCO_IDLE    0x0
 #define VCO_WORKING 0x1
 #define VCO_EMPTY   0x2
@@ -90,28 +81,7 @@ void main()
 /*     reg_spimaster_config = 0xb002;      // Apply stream mode */
 
 /* #ifdef USE_PLL */
-/*     reg_spimaster_data = 0x80;          // Write 0x80 (write mode) */
-/*     reg_spimaster_data = 0x08;          // Write 0x18 (start address) */
-/*     reg_spimaster_data = 0x01;          // Write 0x01 to PLL enable, no DCO mode */
-/*     reg_spimaster_config = 0xa102;      // Release CSB (ends stream mode) */
 
-/*     reg_spimaster_config = 0xb002;      // Apply stream mode */
-/*     reg_spimaster_data = 0x80;          // Write 0x80 (write mode) */
-/*     reg_spimaster_data = 0x11;          // Write 0x11 (start address) */
-/*     reg_spimaster_data = 0x06;          // Write 0x03 to PLL output divider */
-/*     reg_spimaster_config = 0xa102;      // Release CSB (ends stream mode) */
-
-/*     reg_spimaster_config = 0xb002;      // Apply stream mode */
-/*     reg_spimaster_data = 0x80;          // Write 0x80 (write mode) */
-/*     reg_spimaster_data = 0x09;          // Write 0x09 (start address) */
-/*     reg_spimaster_data = 0x00;          // Write 0x00 to clock from PLL (no bypass) */
-/*     reg_spimaster_config = 0xa102;      // Release CSB (ends stream mode) */
-
-/*     reg_spimaster_config = 0xb002;      // Apply stream mode */
-/*     reg_spimaster_data = 0x80;          // Write 0x80 (write mode) */
-/*     reg_spimaster_data = 0x12;          // Write 0x12 (start address) */
-/*     reg_spimaster_data = 0x03;          // Write 0x03 to feedback divider (was 0x04) */
-/*     reg_spimaster_config = 0xa102;      // Release CSB (ends stream mode) */
 /* #endif */
 
     reg_mprj_datal = 0x00000000;
@@ -146,16 +116,45 @@ void main()
     /* Apply configuration */
     reg_mprj_xfer = 1;
     while (reg_mprj_xfer == 1);
+    /*
+     *-------------------------------------------------------------
+     * Register 2610_000c       reg_hkspi_pll_ena
+     * SPI address 0x08 = PLL enables
+     * bit 0 = PLL enable, bit 1 = DCO enable
+     *
+     * Register 2610_0010       reg_hkspi_pll_bypass
+     * SPI address 0x09 = PLL bypass
+     * bit 0 = PLL bypass
+     *
+     * Register 2610_0020       reg_hkspi_pll_source
+     * SPI address 0x11 = PLL source
+     * bits 0-2 = phase 0 divider, bits 3-5 = phase 90 divider
+     *
+     * Register 2610_0024       reg_hkspi_pll_divider
+     * SPI address 0x12 = PLL divider
+     * bits 0-4 = feedback divider
+     *
+     * Register 2620_0004       reg_clk_out_dest
+     * SPI address 0x1b = Output redirect
+     * bit 0 = trap to mprj_io[13]
+     * bit 1 = clk  to mprj_io[14]
+     * bit 2 = clk2 to mprj_io[15]
+     *-------------------------------------------------------------
+     */
+    reg_hkspi_pll_ena = 0x1;
+    reg_hkspi_pll_source = 0x33;
+    reg_hkspi_pll_bypass = 0;
+    reg_hkspi_pll_divider = 0x0c;
 
     reg_la0_oenb = reg_la0_iena = 0xFFFFFFFF;    // [31:0]
 
     // Flag start of the test
     reg_mprj_datal = 0xB4000000;
 
-    reg_mprj_slave = VCO_ADC0_EN | NUM_SAMPLES(2048) | OVERSAMPLE(500);
+    reg_mprj_slave = SHIFT_FACTOR(10) | VCO_ADC0_EN | NUM_SAMPLES(2048) | OVERSAMPLE(500);
     while((reg_mprj_status & 0x1) != 0);
     // read until empty
-    for (int i = 0; i < 2048; ++i){
+    for (int i = 0; i < 1024; ++i){
       vco_data[0] = reg_mprj_vco_adc;
     }
     // reread the data memory

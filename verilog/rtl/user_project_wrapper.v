@@ -30,20 +30,19 @@
  */
 
 module user_project_wrapper #(
-    parameter BITS = 32
+	parameter BITS = 32
 ) (
 `ifdef USE_POWER_PINS
-    inout vdda1,	// User area 1 3.3V supply
-    inout vdda2,	// User area 2 3.3V supply
-    inout vssa1,	// User area 1 analog ground
-    inout vssa2,	// User area 2 analog ground
-    inout vccd1,	// User area 1 1.8V supply
-    inout vccd2,	// User area 2 1.8v supply
-    inout vssd1,	// User area 1 digital ground
-    inout vssd2,	// User area 2 digital ground
+	inout vdda1,	// User area 1 3.3V supply
+	inout vdda2,	// User area 2 3.3V supply
+	inout vssa1,	// User area 1 analog ground
+	inout vssa2,	// User area 2 analog ground
+	inout vccd1,	// User area 1 1.8V supply
+	inout vccd2,	// User area 2 1.8v supply
+	inout vssd1,	// User area 1 digital ground
+	inout vssd2,	// User area 2 digital ground
 `endif
-
-    // Wishbone Slave ports (WB MI A)
+// Wishbone Slave ports (WB MI A)
     input wb_clk_i,
     input wb_rst_i,
     input wbs_stb_i,
@@ -75,110 +74,52 @@ module user_project_wrapper #(
     input   user_clock2,
 
     // User maskable interrupt signals
-    output [2:0] user_irq
+	output [2:0] user_irq
+
 );
-   wire 	 phase0;
-   wire [2:0] 	 a_w;
-   wire  	 vco_enb;
-   wire [31:0] 	 adc_out_0;
-   wire [9:0] 	 oversample;
-   wire  	 en;
-   reg  	 adc_dvalid;
-   wire  	 sinc3_dvalid;
+/*---------------------------------------------------*/
+/* User project wire description instantiated here   */
+/*---------------------------------------------------*/
+   wire          phase0;
+   wire          vco_enb;
 
 /*--------------------------------------*/
 /* User project is instantiated  here   */
 /*--------------------------------------*/
-   vco_adc_wrapper
-     vco_adc_wrapper_1 (
+      vco_adc_wrapper vco_adc_wrapper
+	(
 `ifdef USE_POWER_PINS
-	   .vccd1(vccd1),	// User area 1 1.8V power
-	   .vssd1(vssd1),	// User area 1 digital ground
+         .vccd1(vccd1),       // User area 1 1.8V power
+         .vssd1(vssd1),       // User area 1 digital ground
 `endif
+         .wb_clk_i(wb_clk_i),
+         .wb_rst_i(wb_rst_i),
+	 .user_clock2(user_clock2),
+           // MGMT SoC Wishbone Slave
+         .wbs_cyc_i(wbs_cyc_i),
+         .wbs_stb_i(wbs_stb_i),
+         .wbs_we_i(wbs_we_i),
+         .wbs_sel_i(wbs_sel_i),
+         .wbs_adr_i(wbs_adr_i),
+         .wbs_dat_i(wbs_dat_i),
+         .wbs_ack_o(wbs_ack_o),
+         .wbs_dat_o(wbs_dat_o),
+	 .io_oeb(io_oeb[25:23]),
+         .phase_in(phase0),
+         .vco_enb_o(vco_enb));
 
-	   .wb_clk_i(wb_clk_i),
-	   .wb_rst_i(wb_rst_i),
-
-	   // MGMT SoC Wishbone Slave
-
-	   .wbs_cyc_i(wbs_cyc_i),
-	   .wbs_stb_i(wbs_stb_i),
-	   .wbs_we_i(wbs_we_i),
-	   .wbs_sel_i(wbs_sel_i),
-	   .wbs_adr_i(wbs_adr_i),
-	   .wbs_dat_i(wbs_dat_i),
-	   .wbs_ack_o(wbs_ack_o),
-	   .wbs_dat_o(wbs_dat_o),
-
-	   // Logic Analyzer
-
-	   // .la_data_in(la_data_in),
-	   // .la_data_out(la_data_out),
-	   // .la_oenb (la_oenb),
-
-	   // IO Pads
-
-	   //.io_in (io_in),
-	   // .io_out(io_out),
-	   // .io_oeb(io_oeb),
-	   // IRQ
-	   //.irq(user_irq),
-	   .phase_in(phase0),
-           .vco_enb_o(vco_enb)
-	   );
-
-
-   vco_adc2 vco_0 (
-	  // .rst(wb_rst_i),
-	  // .enable_in(1'b1),
+   vco_adc2 vco_adc2
+     (
 `ifdef USE_POWER_PINS
-		   .vdda1(vdda1),
-		   .vssa1(vssa1),
+      .vdda1(vdda1),
+      .vssa1(vssa1),
 `endif
-		   .clk(wb_clk_i),
-		   .enable_in(vco_enb),
-		   .analog_in(analog_io[16]),
-		   .vbias_34(analog_io[18]),
-		   .vbias_12(analog_io[17]),
-		   .quantizer_out(phase0));
-   // assign analog_io[9] = a_w[0];
-   // assign analog_io[10] = phase0;
-
-// user_proj_example mprj (
-// `ifdef USE_POWER_PINS
-// 	.vccd1(vccd1),	// User area 1 1.8V power
-// 	.vssd1(vssd1),	// User area 1 digital ground
-// `endif
-
-//     .wb_clk_i(wb_clk_i),
-//     .wb_rst_i(wb_rst_i),
-
-//     // MGMT SoC Wishbone Slave
-
-//     .wbs_cyc_i(wbs_cyc_i),
-//     .wbs_stb_i(wbs_stb_i),
-//     .wbs_we_i(wbs_we_i),
-//     .wbs_sel_i(wbs_sel_i),
-//     .wbs_adr_i(wbs_adr_i),
-//     .wbs_dat_i(wbs_dat_i),
-//     .wbs_ack_o(wbs_ack_o),
-//     .wbs_dat_o(wbs_dat_o),
-
-//     // Logic Analyzer
-
-//     .la_data_in(la_data_in),
-//     .la_data_out(la_data_out),
-//     .la_oenb (la_oenb),
-
-//     // IO Pads
-
-//     .io_in ({io_in[37:30],io_in[7:0]}),
-//     .io_out({io_out[37:30],io_out[7:0]}),
-//     .io_oeb({io_oeb[37:30],io_oeb[7:0]}),
-
-//     // IRQ
-//     .irq(user_irq)
-// );
+      .clk(user_clock2),
+      .enable_in(vco_enb),
+      .analog_in(analog_io[16]),
+      .vbias_34(analog_io[18]),
+      .vbias_12(analog_io[17]),
+      .quantizer_out(phase0));
 
 endmodule	// user_project_wrapper
 

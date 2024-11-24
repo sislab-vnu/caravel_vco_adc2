@@ -28,11 +28,18 @@ if { ![info exists ::env(SYNTH_CLK_DRIVING_CELL_PIN)] } {
 	set ::env(SYNTH_CLK_DRIVING_CELL_PIN) $::env(SYNTH_DRIVING_CELL_PIN)
 }
 
+create_clock [get_ports {user_clock2}] -name vco_clk -period 25
+
+set_false_path -from [get_clock {vco_clk}] -to [get_clock {clk}]
+set_false_path -from [get_clock {clk}] -to [get_clock {vco_clk}]
+
 # Clock non-idealities
 set_propagated_clock [all_clocks]
 set_clock_uncertainty $::env(SYNTH_CLOCK_UNCERTAINTY) [get_clocks {clk}]
+set_clock_uncertainty $::env(SYNTH_CLOCK_UNCERTAINTY) [get_clocks {vco_clk}]
 puts "\[INFO\]: Setting clock uncertainity to: $::env(SYNTH_CLOCK_UNCERTAINTY)"
 set_clock_transition $::env(SYNTH_CLOCK_TRANSITION) [get_clocks {clk}]
+set_clock_transition $::env(SYNTH_CLOCK_TRANSITION) [get_clocks {vco_clk}]
 puts "\[INFO\]: Setting clock transition to: $::env(SYNTH_CLOCK_TRANSITION)"
 
 # Maximum transition time for the design nets
@@ -70,51 +77,38 @@ set clk_max_latency 5.57
 set clk_min_latency 4.65
 set_clock_latency -source -max $clk_max_latency [get_clocks {clk}]
 set_clock_latency -source -min $clk_min_latency [get_clocks {clk}]
+set_clock_latency -source -max $usr_clk_max_latency [get_clocks {vco_clk}]
+set_clock_latency -source -min $usr_clk_min_latency [get_clocks {vco_clk}]
 puts "\[INFO\]: Setting clock latency range: $clk_min_latency : $clk_max_latency"
 
 # Clock input Transition
 set usr_clk_tran 0.13
 set clk_tran 0.61
 set_input_transition $clk_tran [get_ports $clk_input]
+set_input_transition $usr_clk_tran [get_ports {user_clock2}]
 puts "\[INFO\]: Setting clock transition: $clk_tran"
 
 # Input delays
-set_input_delay -max 1.87 -clock [get_clocks {clk}] [get_ports {la_data_in[*]}]
-set_input_delay -max 1.89 -clock [get_clocks {clk}] [get_ports {la_oenb[*]}]
 set_input_delay -max 3.17 -clock [get_clocks {clk}] [get_ports {wbs_sel_i[*]}]
 set_input_delay -max 3.74 -clock [get_clocks {clk}] [get_ports {wbs_we_i}]
 set_input_delay -max 3.89 -clock [get_clocks {clk}] [get_ports {wbs_adr_i[*]}]
 set_input_delay -max 4.13 -clock [get_clocks {clk}] [get_ports {wbs_stb_i}]
 set_input_delay -max 4.61 -clock [get_clocks {clk}] [get_ports {wbs_dat_i[*]}]
 set_input_delay -max 4.74 -clock [get_clocks {clk}] [get_ports {wbs_cyc_i}]
-set_input_delay -min 0.18 -clock [get_clocks {clk}] [get_ports {la_data_in[*]}]
-set_input_delay -min 0.3  -clock [get_clocks {clk}] [get_ports {la_oenb[*]}]
 set_input_delay -min 0.79 -clock [get_clocks {clk}] [get_ports {wbs_adr_i[*]}]
 set_input_delay -min 1.04 -clock [get_clocks {clk}] [get_ports {wbs_dat_i[*]}]
 set_input_delay -min 1.19 -clock [get_clocks {clk}] [get_ports {wbs_sel_i[*]}]
 set_input_delay -min 1.65 -clock [get_clocks {clk}] [get_ports {wbs_we_i}]
 set_input_delay -min 1.69 -clock [get_clocks {clk}] [get_ports {wbs_cyc_i}]
 set_input_delay -min 1.86 -clock [get_clocks {clk}] [get_ports {wbs_stb_i}]
-if { $::env(IO_SYNC) } {
-	set in_ext_delay 4
-	puts "\[INFO\]: Setting input ports external delay to: $in_ext_delay"
-	set_input_delay -max [expr $in_ext_delay + 4.55] -clock [get_clocks {clk}] [get_ports {io_in[*]}]
-	set_input_delay -min [expr $in_ext_delay + 1.26] -clock [get_clocks {clk}] [get_ports {io_in[*]}]
-}
 
 # Input Transition
 set_input_transition -max 0.14  [get_ports {wbs_we_i}]
 set_input_transition -max 0.15  [get_ports {wbs_stb_i}]
 set_input_transition -max 0.17  [get_ports {wbs_cyc_i}]
 set_input_transition -max 0.18  [get_ports {wbs_sel_i[*]}]
-set_input_transition -max 0.38  [get_ports {io_in[*]}]
 set_input_transition -max 0.84  [get_ports {wbs_dat_i[*]}]
-set_input_transition -max 0.86  [get_ports {la_data_in[*]}]
 set_input_transition -max 0.92  [get_ports {wbs_adr_i[*]}]
-set_input_transition -max 0.97  [get_ports {la_oenb[*]}]
-set_input_transition -min 0.05  [get_ports {io_in[*]}]
-set_input_transition -min 0.06  [get_ports {la_oenb[*]}]
-set_input_transition -min 0.07  [get_ports {la_data_in[*]}]
 set_input_transition -min 0.07  [get_ports {wbs_adr_i[*]}]
 set_input_transition -min 0.07  [get_ports {wbs_dat_i[*]}]
 set_input_transition -min 0.09  [get_ports {wbs_cyc_i}]
@@ -124,21 +118,10 @@ set_input_transition -min 0.15  [get_ports {wbs_stb_i}]
 
 # Output delays
 set_output_delay -max 0.7  -clock [get_clocks {clk}] [get_ports {user_irq[*]}]
-set_output_delay -max 1.0  -clock [get_clocks {clk}] [get_ports {la_data_out[*]}]
 set_output_delay -max 3.62 -clock [get_clocks {clk}] [get_ports {wbs_dat_o[*]}]
 set_output_delay -max 8.41 -clock [get_clocks {clk}] [get_ports {wbs_ack_o}]
-set_output_delay -min 0    -clock [get_clocks {clk}] [get_ports {la_data_out[*]}]
-set_output_delay -min 0    -clock [get_clocks {clk}] [get_ports {user_irq[*]}]
 set_output_delay -min 1.13 -clock [get_clocks {clk}] [get_ports {wbs_dat_o[*]}]
 set_output_delay -min 1.37 -clock [get_clocks {clk}] [get_ports {wbs_ack_o}]
-if { $::env(IO_SYNC) } {
-	set out_ext_delay 4
-	puts "\[INFO\]: Setting output ports external delay to: $out_ext_delay"
-	set_output_delay -max [expr $out_ext_delay + 9.12] -clock [get_clocks {clk}] [get_ports {io_out[*]}]
-	set_output_delay -max [expr $out_ext_delay + 9.32] -clock [get_clocks {clk}] [get_ports {io_oeb[*]}]
-	set_output_delay -min [expr $out_ext_delay + 2.34] -clock [get_clocks {clk}] [get_ports {io_oeb[*]}]
-	set_output_delay -min [expr $out_ext_delay + 3.9]  -clock [get_clocks {clk}] [get_ports {io_out[*]}]
-}
 
 # Output loads
 set_load 0.19 [all_outputs]
